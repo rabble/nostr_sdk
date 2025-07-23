@@ -624,6 +624,9 @@ class RelayPool {
   /// there are tempRelays, it also send to tempRelays too.
   bool send(List<dynamic> message,
       {List<String>? tempRelays, List<String>? targetRelays}) {
+    handleAddrList(tempRelays);
+    handleAddrList(targetRelays);
+
     bool hadSubmitSend = false;
 
     for (Relay relay in _relays.values) {
@@ -713,7 +716,11 @@ class RelayPool {
 
     int sameNum = 0;
     for (var extralRelay in extralRelays) {
-      extralRelay = RelayAddrUtil.handle(extralRelay);
+      try {
+        extralRelay = RelayAddrUtil.handle(extralRelay);
+      } catch (e) {
+        print("handle relay addr error $e $extralRelay");
+      }
 
       var relay = _relays[extralRelay];
       if (relay == null || !relay.relayStatus.readAccess) {
